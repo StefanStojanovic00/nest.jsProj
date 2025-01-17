@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,24 +7,34 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoryService {
+ 
   
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
 
-  create(CreateCategoryDto: CreateCategoryDto)
+  async create(CreateCategoryDto: CreateCategoryDto)
   {
-    const category=new Category();
-    category.name= CreateCategoryDto.name;
+    if(CreateCategoryDto ===undefined || CreateCategoryDto.name === '' || CreateCategoryDto === null)
+      throw new BadRequestException('InvalidCategoryName');
+    
+    let category=await this.categoryRepository.findOneBy({name:CreateCategoryDto.name});
+
+    if(category) throw new BadRequestException('CategoryAlredyExist');
+
+    category=this.categoryRepository.create(CreateCategoryDto);
+
     category.LightingAd=[];
+    return this.categoryRepository.save(category);
   }
-  findAll() {
-    return `This action returns all category`;
+
+  getAll() {
+    return this.categoryRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} category`;
+    return this.categoryRepository.findOneBy({id:id});
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {

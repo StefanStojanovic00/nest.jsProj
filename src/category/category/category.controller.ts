@@ -14,13 +14,13 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Post()
   @Roles(ProfileType.admin)
-  create(@Body() createCategoryDto: CreateCategoryDto) {
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  getAll() {
+    return this.categoryService.getAll();
   }
 
   @Get(':id')

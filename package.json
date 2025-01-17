@@ -34,13 +34,15 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
+    "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -48,6 +50,7 @@
     "@nestjs/testing": "^10.0.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.2",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.3.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.0",

@@ -31,4 +31,5 @@ export class LightingAd {
     @ManyToMany(()=>User,(user:User)=>user.favourites)
     @JoinTable({name:'adFavourites'})
     public users:User[];
+    
 }
