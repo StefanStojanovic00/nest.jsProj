@@ -5,7 +5,7 @@ import { Category } from "./category/category/entities/category.entity";
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 
-/*export const  typeOrmConfig: DataSourceOptions =
+export const  typeOrmConfig: DataSourceOptions =
 {
     
           type: 'postgres', 
@@ -19,7 +19,8 @@ import { config } from 'dotenv';
     
       
 }
-*/
+/*
+//rad sa migracijama 
 config();
 
 const configService = new ConfigService();
@@ -38,3 +39,4 @@ export const  typeOrmConfig=new DataSource(
     
       
 })
+*/

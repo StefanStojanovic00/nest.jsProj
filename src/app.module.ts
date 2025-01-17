@@ -8,7 +8,7 @@ import { UserModule } from './User/user/user.module';
 import { CategoryModule } from './category/category/category.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig.options), LightingAdModule,UserModule,CategoryModule ],
+  imports: [TypeOrmModule.forRoot(typeOrmConfig), LightingAdModule,UserModule,CategoryModule ],
   controllers: [AppController],
   providers: [AppService],
 })
