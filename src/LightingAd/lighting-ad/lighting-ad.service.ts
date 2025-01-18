@@ -28,7 +28,7 @@ export class LightingAdService {
     const lad=this.lightAdRepository.create(createLightingAdDto);
 
     let paths: string[] =[];
-    images.forEach((img)=>paths.push(img.path));
+    images.forEach((img)=>paths.push(img.filename));
 
     const category: Category |  null = await this.categoryRepository.findOneBy({
       id: createLightingAdDto.categoryID,
@@ -44,8 +44,20 @@ export class LightingAdService {
     
   }
 
-  getAll() {
-    throw this.lightAdRepository.find();
+  public async getAll() {
+      const lad: LightingAd[] = await this.lightAdRepository.find();
+
+      lad.map((el)=>{
+        let a:  string = <string> (<unknown>el.gallery);
+        a=a.slice(2);
+        a=a.slice(0,-2);
+        const lad=a.split('","');
+
+        el.gallery=lad;
+        return el;
+
+  });
+  return lad;
   }
 
    remove(id: number) {

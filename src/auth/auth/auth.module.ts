@@ -3,13 +3,13 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/User/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { JWT_SECRET } from 'helpConfig';
+import { JWT_EXPIRATION, JWT_SECRET } from 'helpConfig';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [UserModule,PassportModule,JwtModule.register({
     secret: JWT_SECRET.secret,
-    signOptions: {expiresIn:'1d'},
+    signOptions: {expiresIn:JWT_EXPIRATION.time},
   })],
   controllers: [AuthController],
   providers: [AuthService],

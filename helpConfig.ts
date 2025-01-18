@@ -4,3 +4,7 @@ export const JWT_SECRET = {
 }
 
 export const IMG_COUNT = 10;
+
+export const JWT_EXPIRATION = {
+    time: '1d'
+}

@@ -14,7 +14,7 @@ import { IMG_COUNT } from 'helpConfig';
 
 export const fileConf = {
   storage: diskStorage({
-    destination: './uploads',
+    destination: 'C:/STORAGE/rwa-angular/assets',
     filename: (req, file, cb) => {
       const name = uuidv4();
       const ext = file.originalname.split('.').pop();

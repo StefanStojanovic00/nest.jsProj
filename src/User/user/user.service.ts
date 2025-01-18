@@ -4,12 +4,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { SALT_ROUNDS } from 'helpConfig';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  
-  userRepository: any;
-    async create(userDto: CreateUserDto): Promise<User | undefined> {
+  constructor(@InjectRepository(User) private userRepository:Repository<User>)
+    {} 
+
+    
+     async create(userDto: CreateUserDto): Promise<User | undefined> {
       const { email, password } = userDto;
   
       if (!email || !password) {
