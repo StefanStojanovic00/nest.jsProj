@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Request, Delete, BadRequestException, UseGuards, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Request, Delete, BadRequestException, UseGuards, UseInterceptors, UploadedFile, UploadedFiles, ParseIntPipe } from '@nestjs/common';
 import { LightingAdService } from './lighting-ad.service';
 import { CreateLightingAdDto } from './dto/create-lighting-ad.dto';
 import { UpdateLightingAdDto } from './dto/update-lighting-ad.dto';
@@ -54,19 +54,28 @@ export class LightingAdController {
     return this.lightingAdService.getAll();
   }
 
-  /*@Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lightingAdService.findOne(+id);
+  @Get(':id')
+  findOne(@Param('id',ParseIntPipe) id: number) {
+    return this.lightingAdService.findOne(id);
   }
 
-  @Patch(':id')
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Get('myAds')
+  @Roles(ProfileType.admin,ProfileType.user)
+  public getByUser(@Request() req)
+  {
+    return this.lightingAdService.getByUser(req.user.id);
+  }
+
+ /* @Patch(':id')
   update(@Param('id') id: string, @Body() updateLightingAdDto: UpdateLightingAdDto) {
     return this.lightingAdService.update(+id, updateLightingAdDto);
   }*/
-
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Delete(':id')
-  public remove(@Param('id') id: number) {
-    return this.lightingAdService.remove(id);
+  @Roles(ProfileType.admin,ProfileType.user)
+  public remove(@Param('id',ParseIntPipe) id: number,@Request() req) {
+    return this.lightingAdService.remove(id,req.user.id);
   }
 
 }

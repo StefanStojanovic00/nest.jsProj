@@ -23,6 +23,9 @@ export class User {
   
     @Column({ type: 'text', nullable: false, default: ProfileType.user })
     public type: string;
+
+    @Column({type:'text',nullable:true})
+    public imagePath:string;
   
 
     @OneToMany(() => LightingAd, (ad: LightingAd) => ad.createdBy)

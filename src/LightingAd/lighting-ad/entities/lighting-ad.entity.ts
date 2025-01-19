@@ -28,6 +28,8 @@ export class LightingAd {
     @ManyToOne(()=>Category,(category: Category)=>category.LightingAd)
     public category:Category;
 
+    
+
     @ManyToMany(()=>User,(user:User)=>user.favourites)
     @JoinTable({name:'adFavourites'})
     public users:User[];

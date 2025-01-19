@@ -5,4 +5,5 @@ export class CreateLightingAdDto {
     price: number;
     gallery: string[];
     categoryID:number;
+    createdById: number;
 }
