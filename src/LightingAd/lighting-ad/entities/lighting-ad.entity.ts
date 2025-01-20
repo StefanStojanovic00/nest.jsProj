@@ -19,8 +19,11 @@ export class LightingAd {
     @Column({type:'text',nullable:false})
     public price: number;
 
-    @Column({type:'text'})
+    @Column('simple-array')
     public gallery: string[];
+
+    @Column({type:'boolean',default:false })
+    public deleted:boolean;
 
     @ManyToOne(()=> User, (user:User)=>user.myAds)
     public createdBy: User;
@@ -28,7 +31,7 @@ export class LightingAd {
     @ManyToOne(()=>Category,(category: Category)=>category.LightingAd)
     public category:Category;
 
-    
+
 
     @ManyToMany(()=>User,(user:User)=>user.favourites)
     @JoinTable({name:'adFavourites'})

@@ -6,3 +6,4 @@ export class CreateUserDto {
     phone: string;
     imagePath: string;
 }
+

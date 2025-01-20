@@ -1,16 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateLightingAdDto } from './dto/create-lighting-ad.dto';
 import { UpdateLightingAdDto } from './dto/update-lighting-ad.dto';
+import { LightingAdDtoSearch } from './dto/search-lighting-ad.dto';
 import { User } from 'src/User/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Admin, Repository } from 'typeorm';
 import { LightingAd } from './entities/lighting-ad.entity';
 import { Category } from 'src/category/category/entities/category.entity';
-import path from 'path';
-import { request } from 'http';
+import { ProfileType } from 'src/enum/profileType.enum';
+
+
+
 
 @Injectable()
 export class LightingAdService {
+ 
  
 
   constructor(@InjectRepository(LightingAd) private lightAdRepository:Repository<LightingAd>,
@@ -53,19 +57,23 @@ export class LightingAdService {
   }
 
   public async getAll() {
-      const lad: LightingAd[] = await this.lightAdRepository.find({relations: { createdBy: true, category: true }});
+      const ads: LightingAd[] = await this.lightAdRepository.find({
+        where:{deleted:false},
+        relations: { createdBy: true, category: true 
 
-      lad.map((el)=>{
+        }});
+
+      /*ads.map((el)=>{
         let a:  string = <string> (<unknown>el.gallery);
         a=a.slice(2);
         a=a.slice(0,-2);
-        const lad=a.split('","');
+        const ads=a.split('","');
 
-        el.gallery=lad;
+        el.gallery=ads;
         return el;
 
-  });
-  return lad;
+         });*/
+    return ads;
   }
 
   async remove(id: number,userId:number) {
@@ -99,20 +107,9 @@ export class LightingAdService {
 
     if(!user) throw new BadRequestException('invalideUser');
     
-
-    user.myAds.map((el)=>
-    {
-      let a: string=<string>(<unknown>el.gallery);
-      a=a.slice(2);
-      a=a.slice(0,-2);
-      const arr=a.split('","');
-      
-      el.gallery=arr;
-      return el;
-    });
-
     const data =user.myAds.map((ad:LightingAd)=>
     {
+      if(!ad.deleted)
       return {
         ...ad,createdBy:{
           id: user.id,
@@ -128,15 +125,190 @@ export class LightingAdService {
     return data;
   }
 
-  findOne(id: number) {
-    return this.lightAdRepository.findOne(
+  async findOne(id: number,user:User) {
+    if(!user) return new BadRequestException('invalideUser');
+
+    const user2: User= await this.userRepository.findOne(
       {
-        where:{id:id,},
-        relations:{createdBy:true,category:true},
-      });
+        where:{id:user.id},
+        relations:{favourites:true},
+
+      }
+    );
+
+    const ad: LightingAd= await this.lightAdRepository.findOne(
+      {
+        where:{
+          id:id,
+        },
+        relations:{createdBy:true, category:true},
+      }
+    );
+
+    if(!ad) return new BadRequestException('AdNotFounde');
+
+    const isSaved:boolean=!!user2.favourites.find((fav)=>
+    {
+      return fav.id===ad.id;
+    });
+
+    const data=
+    {
+      ...ad,
+      isSaved:isSaved,
+    };
+
+    return data;
+
   }
 
  
+  async update(updateLightingAdDto: UpdateLightingAdDto, images: Array<Express.Multer.File>, user: User) {
+    if(!user) throw new BadRequestException ('invalideUser');
+    
+    const ad:LightingAd= await this.lightAdRepository.findOne(
+      {
+        where:{
+          id:updateLightingAdDto.id
+        },
+        relations:{ category:true}
+      }
+    );
 
+
+    if(!ad) throw new BadRequestException('LightingAdNotFounde');
+
+    const category:Category= await this.categoryRepository.findOne(
+      {
+        where:{id:updateLightingAdDto.categoryID},
+      }
+    );
+
+    if(!category) throw new BadRequestException('invalideCategory');
+   /* title:string;
+    description: string;
+    brand: string;
+    price: number;
+    gallery: string[];
+    categoryID:number;
+    createdById: number;*/
+    
+    ad.title=updateLightingAdDto.title;
+    ad.description=updateLightingAdDto.description;
+    ad.brand=updateLightingAdDto.brand;
+    ad.price=updateLightingAdDto.price;
+    ad.category=category;
+
+
+    let imgs:string[] =[];
+    if(images.length!==0)
+    {
+      images.forEach((img)=>imgs.push(img.filename));
+    }
+    else
+    {
+      imgs=updateLightingAdDto.gallery;
+    }
+
+    ad.gallery=imgs;
+    if(!(await this.lightAdRepository.update(updateLightingAdDto.id,ad))) return null;
+
+    return ad;
+  }
+
+  async getByUserSaved(accesUser: User) {
+    if(!accesUser)throw new BadRequestException('invalideUser');
+
+    const user:User= await this.userRepository.findOne({
+      where:{id:accesUser.id},
+      relations:{favourites:true},
+    });
+
+    const data= user.favourites.map((ad:LightingAd)=>
+    {
+      if(!ad.deleted)
+      return{
+        ...ad,createdBy:{
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          type: user.type,
+          imagePath: user.imagePath,
+
+        },
+      };
+    });
+
+    return data;
+  }
+
+  async getBySearch(dto: LightingAdDtoSearch) {
+    const {searchInput, categoryId }= dto;
+
+    let ads:LightingAd[];
+
+    if(categoryId)
+    {
+      ads=await this.lightAdRepository.find(
+        {
+          relations:['category'],
+            where:{ deleted:false,
+                category:{id:categoryId},
+            },
+        },
+      );
+    }
+    else{
+      ads= await this.lightAdRepository.find();
+    }
+
+    //mozda dodati i ako se nalazi u descrpciji idk 
+    if(searchInput.length>0)
+    {
+      ads=ads.filter(ad=>
+      {
+        ad.title.includes(searchInput) || ad.brand.includes(searchInput) 
+      }
+      );
+
+    }
+    return ads;
+
+  }
+
+  async softDelet(dto: UpdateLightingAdDto, Userid: number) {
+    const { id }=dto;
+
+    const user:User = await this.userRepository.findOne(
+      {
+        where:{id:Userid},
+    
+      }
+    );
+
+    if(!user) throw new BadRequestException('invalideUser');
+
+    if (!user || user.type !== ProfileType.admin)
+      throw new BadRequestException('Forbidden');
+
+    const ad:LightingAd = await this.lightAdRepository.findOne(
+      {
+        where:{id:id}
+      }
+    );
+
+    if(!ad) throw new BadRequestException('adNotFounded');
+
+    ad.deleted=true;
+
+    if(!(await this.lightAdRepository.update(ad.id,ad)))
+      return { success: false };
+
+    return { success: true };
+  }
+ 
+ 
+ 
  
 }
