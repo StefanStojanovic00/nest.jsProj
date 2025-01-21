@@ -8,6 +8,7 @@ import { Admin, Repository } from 'typeorm';
 import { LightingAd } from './entities/lighting-ad.entity';
 import { Category } from 'src/category/category/entities/category.entity';
 import { ProfileType } from 'src/enum/profileType.enum';
+import { UPLOAD_DESTINATION } from 'helpConfig';
 
 
 
@@ -27,7 +28,7 @@ export class LightingAdService {
   public async create(
     createLightingAdDto: CreateLightingAdDto,
      images: Array<Express.Multer.File>, 
-     user: User) 
+     user: User):Promise<LightingAd>
  {
   if(!user)
     throw new BadRequestException('InvalidUser');
@@ -56,23 +57,13 @@ export class LightingAdService {
     
   }
 
-  public async getAll() {
+  public async getAll():Promise<LightingAd[]> {
       const ads: LightingAd[] = await this.lightAdRepository.find({
         where:{deleted:false},
         relations: { createdBy: true, category: true 
 
         }});
 
-      /*ads.map((el)=>{
-        let a:  string = <string> (<unknown>el.gallery);
-        a=a.slice(2);
-        a=a.slice(0,-2);
-        const ads=a.split('","');
-
-        el.gallery=ads;
-        return el;
-
-         });*/
     return ads;
   }
 
@@ -89,6 +80,17 @@ export class LightingAdService {
     {
       throw new BadRequestException('invalideUser');
 
+    }
+
+    if (ad.gallery.length > 0) {
+      const { gallery } = ad;
+
+      const fs = require('fs');
+
+      gallery.forEach((img) => {
+        const path: string = `${UPLOAD_DESTINATION}/${img}`;
+        fs.unlinkSync(path);
+      });
     }
 
     if(!(await this.lightAdRepository.delete(id)))
@@ -163,7 +165,7 @@ export class LightingAdService {
   }
 
  
-  async update(updateLightingAdDto: UpdateLightingAdDto, images: Array<Express.Multer.File>, user: User) {
+  async update(updateLightingAdDto: UpdateLightingAdDto, images: Array<Express.Multer.File>, user: User):Promise<LightingAd> {
     if(!user) throw new BadRequestException ('invalideUser');
     
     const ad:LightingAd= await this.lightAdRepository.findOne(
@@ -204,6 +206,13 @@ export class LightingAdService {
     if(images.length!==0)
     {
       images.forEach((img)=>imgs.push(img.filename));
+
+      const fs=require('fs');
+      ad.gallery.forEach(img=>
+      {
+        fs.unlinkSync(`${UPLOAD_DESTINATION}/${img}`)
+      }
+      )
     }
     else
     {
@@ -243,7 +252,7 @@ export class LightingAdService {
     return data;
   }
 
-  async getBySearch(dto: LightingAdDtoSearch) {
+  async getBySearch(dto: LightingAdDtoSearch):Promise<LightingAd[]> {
     const {searchInput, categoryId }= dto;
 
     let ads:LightingAd[];

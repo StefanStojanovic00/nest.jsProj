@@ -7,14 +7,14 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoryService {
- 
+  
   
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(CreateCategoryDto: CreateCategoryDto)
+  async create(CreateCategoryDto: CreateCategoryDto):Promise<Category>
   {
     if(CreateCategoryDto ===undefined || CreateCategoryDto.name === '' || CreateCategoryDto === null)
       throw new BadRequestException('InvalidCategoryName');
@@ -37,11 +37,36 @@ export class CategoryService {
     return this.categoryRepository.findOneBy({id:id});
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
+  async update(updateCategoryDto: UpdateCategoryDto) {
+    
+    const{id,name}=updateCategoryDto;
 
-  remove(id: number) {
-    return this.categoryRepository.delete(id);
+    const category:Category=await this.categoryRepository.findOne({
+      where:{id:id}
+    });
+
+    if(!category)  throw new BadRequestException('invalideCategory');
+
+    category.name=name;
+
+    
+    return this.categoryRepository.update(id,category);
+
+    
   }
+  async delete(id: number) {
+    
+    const category:Category=await this.categoryRepository.findOne(
+      {
+        where:{id:id}
+      }
+    );
+
+    if(!category)  throw new BadRequestException('invalideCategory');
+
+    return this.categoryRepository.delete(category.id);
+
+
+  }
+ 
 }

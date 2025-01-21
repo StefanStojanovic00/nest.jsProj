@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { SALT_ROUNDS } from 'helpConfig';
+import { SALT_ROUNDS, UPLOAD_DESTINATION } from 'helpConfig';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LightingAd } from 'src/LightingAd/lighting-ad/entities/lighting-ad.entity';
@@ -109,7 +109,13 @@ export class UserService {
 
       if(img)
       {
-        user.imagePath=img.filename;
+        const { imagePath } = user;
+        const fs = require('fs');
+  
+        if (imagePath) {
+          fs.unlinkSync(`${UPLOAD_DESTINATION}/${imagePath}`);
+        }
+        
       }
 
       if (!(await this.userRepository.update(user.id, user)))

@@ -25,10 +25,10 @@ export class LightingAd {
     @Column({type:'boolean',default:false })
     public deleted:boolean;
 
-    @ManyToOne(()=> User, (user:User)=>user.myAds)
+    @ManyToOne(()=> User, (user:User)=>user.myAds, { onDelete: 'CASCADE' })
     public createdBy: User;
     
-    @ManyToOne(()=>Category,(category: Category)=>category.LightingAd)
+    @ManyToOne(()=>Category,(category: Category)=>category.LightingAd, { onDelete: 'CASCADE' }) 
     public category:Category;
 
 
