@@ -13,8 +13,8 @@ export const JWT_EXPIRATION = {
     time: '1d'
 }
 
-export const ROOT_PATH= "C:\Users\SS\Desktop\nestjs proj rwa\rwa-proj\uploads";
-export const UPLOAD_DESTINATION ="./uploads";
+export const ROOT_PATH= "C:\Users\SS\Desktop\nestjs proj rwa\rwa-proj\assets";
+export const UPLOAD_DESTINATION ="./assets";
 
 export const FILE_CONF = {
     storage: diskStorage({

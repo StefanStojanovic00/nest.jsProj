@@ -1,5 +1,20 @@
 
-get  http://localhost:3000/user
+
+POST http://localhost:3000/lighting-ad
+Content-Type: multipart/form-data
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJhZEBhZC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzgyMzY4MDl9.d7Zv3b41ppBWFNAahIMVQk8CEGD4Y9ZzLMYdlvXLBW4
+
+
+--boundary
+Content-Disposition: form-data; name="dto"
 Content-Type: application/json
 
+{
+  "title": "sinska rasveta",
+  "description": "sinska rasveta",
+  "brand": "random brand",
+  "price": 100,
+  "categoryID": 2,
+  "createdById": 1
+}
 

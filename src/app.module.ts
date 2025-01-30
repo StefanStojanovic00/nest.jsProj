@@ -8,12 +8,16 @@ import { UserModule } from './User/user/user.module';
 import { CategoryModule } from './category/category/category.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ROOT_PATH } from 'helpConfig';
+import { AuthModule } from './auth/auth/auth.module';
+
+
+
 
 @Module({
   imports: [TypeOrmModule.forRoot(typeOrmConfig),ServeStaticModule.forRoot({
     rootPath:ROOT_PATH,
     renderPath:'/'
-  }), LightingAdModule,UserModule,CategoryModule ],
+  }), LightingAdModule,UserModule,CategoryModule,AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

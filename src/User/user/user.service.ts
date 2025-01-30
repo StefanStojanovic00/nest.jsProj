@@ -38,6 +38,7 @@ export class UserService {
       user.email = email;
       user.password = hashedPassword;
       user.favourites = [];
+      
   
       return this.userRepository.save(user);
     }
