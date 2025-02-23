@@ -127,8 +127,8 @@ export class LightingAdService {
     return data;
   }
 
-  async findOne(id: number,user:User) {
-    if(!user) return new BadRequestException('invalideUser');
+  async findOne(id: number,user:User) { 
+    if (!user) throw new BadRequestException('invalideUser');
 
     const user2: User= await this.userRepository.findOne(
       {
@@ -137,6 +137,7 @@ export class LightingAdService {
 
       }
     );
+
 
     const ad: LightingAd= await this.lightAdRepository.findOne(
       {
@@ -147,12 +148,14 @@ export class LightingAdService {
       }
     );
 
-    if(!ad) return new BadRequestException('AdNotFounde');
+    if (!ad) throw new BadRequestException('AdNotFounde');
 
-    const isSaved:boolean=!!user2.favourites.find((fav)=>
+    /*const isSaved:boolean=!!user2.favourites.find((fav)=>
     {
       return fav.id===ad.id;
-    });
+    });*/
+    const isSaved: boolean = !!user2.favourites.find(fav => fav.id === ad.id);
+    
 
     const data=
     {
@@ -187,13 +190,7 @@ export class LightingAdService {
     );
 
     if(!category) throw new BadRequestException('invalideCategory');
-   /* title:string;
-    description: string;
-    brand: string;
-    price: number;
-    gallery: string[];
-    categoryID:number;
-    createdById: number;*/
+  
     
     ad.title=updateLightingAdDto.title;
     ad.description=updateLightingAdDto.description;

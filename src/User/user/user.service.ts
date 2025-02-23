@@ -77,13 +77,6 @@ export class UserService {
     async editProfile(accesUser: User, dto: UpdateUserDto, img: Express.Multer.File) {
       
       const{ firstName, lastName, phone, password} = dto;
-      /*
-       firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    phone: string;
-    imagePath: string;*/
 
       const user:User = await this.userRepository.findOne(
         {
@@ -103,11 +96,13 @@ export class UserService {
 
       if(!accesUser)throw new  BadRequestException('invalideUser');
 
-      user.firstName=firstName;
-      user.lastName=lastName;
-      user.phone=phone;
-      user.password=password;
+      user.firstName = firstName || user.firstName;  
+      user.lastName = lastName || user.lastName;
+      user.phone = phone || user.phone;
+      user.password = password || user.password;
 
+
+      
       if(img)
       {
         const { imagePath } = user;
@@ -121,7 +116,8 @@ export class UserService {
 
       if (!(await this.userRepository.update(user.id, user)))
         return { success: false };
-  
+      
+
       return user;
     }
   

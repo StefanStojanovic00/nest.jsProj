@@ -39,6 +39,7 @@ export class LightingAdController {
     return this.lightingAdService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   @Roles(ProfileType.admin,ProfileType.user)
   findOne(@Param('id',ParseIntPipe) id: number,@Request() req) {
