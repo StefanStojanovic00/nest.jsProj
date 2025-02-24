@@ -56,7 +56,7 @@ export class LightingAdController {
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(ProfileType.admin,ProfileType.user)
-  @Put(':id')
+  @Put()
   @UseInterceptors(FilesInterceptor('images', IMG_COUNT, FILE_CONF))
   update(
      @Body() updateLightingAdDto: UpdateLightingAdDto,
