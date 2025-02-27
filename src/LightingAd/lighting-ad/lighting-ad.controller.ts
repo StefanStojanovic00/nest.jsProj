@@ -39,20 +39,39 @@ export class LightingAdController {
     return this.lightingAdService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Get('myAds')
+  @Roles(ProfileType.admin,ProfileType.user)
+  public getByUser(@Request() req)
+  {   
+    
+    return this.lightingAdService.getByUser(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Roles(ProfileType.admin,ProfileType.user)
+  @Get('saveAds')
+  getByUserSaved(@Request()req)
+  { 
+    return this.lightingAdService.getByUserSaved(req.user);
+  }
+
+  @Get('search')
+  search(@Query() dto:LightingAdDtoSearch)
+  {
+    return this.lightingAdService.getBySearch(dto);
+
+  }
+
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   @Roles(ProfileType.admin,ProfileType.user)
   findOne(@Param('id',ParseIntPipe) id: number,@Request() req) {
     return this.lightingAdService.findOne(id,req.user);
   }
+  
 
-  @UseGuards(JwtAuthGuard,RolesGuard)
-  @Get('myAds')
-  @Roles(ProfileType.admin,ProfileType.user)
-  public getByUser(@Request() req)
-  {
-    return this.lightingAdService.getByUser(req.user.id);
-  }
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(ProfileType.admin,ProfileType.user)
@@ -75,21 +94,7 @@ export class LightingAdController {
     return this.lightingAdService.remove(id,req.user.id);
   }
 
-  
-  @UseGuards(JwtAuthGuard,RolesGuard)
-  @Roles(ProfileType.admin,ProfileType.user)
-  @Get('saveAds')
-  getByUserSaved(@Request()req)
-  {
-    return this.lightingAdService.getByUserSaved(req.user);
-  }
-
-  @Get('search')
-  search(@Query() dto:LightingAdDtoSearch)
-  {
-    return this.lightingAdService.getBySearch(dto);
-
-  }
+    
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(ProfileType.admin)

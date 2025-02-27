@@ -4,7 +4,7 @@ import { UpdateLightingAdDto } from './dto/update-lighting-ad.dto';
 import { LightingAdDtoSearch } from './dto/search-lighting-ad.dto';
 import { User } from 'src/User/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Admin, Repository } from 'typeorm';
+import { Admin, ILike, Repository } from 'typeorm';
 import { LightingAd } from './entities/lighting-ad.entity';
 import { Category } from 'src/category/category/entities/category.entity';
 import { ProfileType } from 'src/enum/profileType.enum';
@@ -102,10 +102,18 @@ export class LightingAdService {
 
 
   public async getByUser(id:number) {
+
+    
+  
+  if (isNaN(id)) {
+    throw new BadRequestException('Invalid ID. Numeric value expected.');
+  }
     const user:User | null = await this.userRepository.findOne({
       where:{id:id},
       relations:{myAds:true}
     });
+
+    
 
     if(!user) throw new BadRequestException('invalideUser');
     
@@ -250,7 +258,7 @@ export class LightingAdService {
   }
 
   async getBySearch(dto: LightingAdDtoSearch):Promise<LightingAd[]> {
-    const {searchInput, categoryId }= dto;
+    /*const {searchInput, categoryId }= dto;
 
     let ads:LightingAd[];
 
@@ -279,7 +287,28 @@ export class LightingAdService {
       );
 
     }
-    return ads;
+    return ads;*/
+    const { searchInput, categoryId } = dto;
+  
+  let whereCondition: any = { deleted: false };
+
+  if (categoryId) {
+    whereCondition.category = { id: categoryId };
+  }
+
+  if (searchInput && searchInput.length > 0) {
+    whereCondition = [
+      { ...whereCondition, title: ILike(`%${searchInput}%`) },
+      { ...whereCondition, brand: ILike(`%${searchInput}%`) }
+    ];
+  }
+
+  const ads = await this.lightAdRepository.find({
+    relations: ['category'],
+    where: whereCondition,
+  });
+
+  return ads;
 
   }
 

@@ -75,8 +75,10 @@ export class UserService {
     }
 
     async editProfile(accesUser: User, dto: UpdateUserDto, img: Express.Multer.File) {
-      
+      console.log('uso');
       const{ firstName, lastName, phone, password} = dto;
+
+      console.log('uso',img);
 
       const user:User = await this.userRepository.findOne(
         {
@@ -111,13 +113,14 @@ export class UserService {
         if (imagePath) {
           fs.unlinkSync(`${UPLOAD_DESTINATION}/${imagePath}`);
         }
+        user.imagePath=img.filename;
         
       }
 
       if (!(await this.userRepository.update(user.id, user)))
         return { success: false };
       
-
+      console.log('user',user.imagePath);
       return user;
     }
   
