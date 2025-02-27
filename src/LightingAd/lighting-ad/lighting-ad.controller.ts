@@ -52,7 +52,7 @@ export class LightingAdController {
   @Roles(ProfileType.admin,ProfileType.user)
   @Get('saveAds')
   getByUserSaved(@Request()req)
-  { 
+  {
     return this.lightingAdService.getByUserSaved(req.user);
   }
 
@@ -94,7 +94,8 @@ export class LightingAdController {
     return this.lightingAdService.remove(id,req.user.id);
   }
 
-    
+  
+  
 
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Roles(ProfileType.admin)

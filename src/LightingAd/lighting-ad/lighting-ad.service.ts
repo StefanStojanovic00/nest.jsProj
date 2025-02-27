@@ -198,7 +198,8 @@ export class LightingAdService {
     );
 
     if(!category) throw new BadRequestException('invalideCategory');
-  
+
+    
     
     ad.title=updateLightingAdDto.title;
     ad.description=updateLightingAdDto.description;
@@ -206,9 +207,9 @@ export class LightingAdService {
     ad.price=updateLightingAdDto.price;
     ad.category=category;
 
-
+    
     let imgs:string[] =[];
-    if(images.length!==0)
+    if(images && images.length!==0)
     {
       images.forEach((img)=>imgs.push(img.filename));
 

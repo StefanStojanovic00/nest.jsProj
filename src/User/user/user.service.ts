@@ -65,13 +65,14 @@ export class UserService {
       }
 
       user.favourites=isAlredySaved ? 
-      user.favourites.filter((fav)=> fav.id=adId)
+      user.favourites = user.favourites.filter((fav) => fav.id !== adId)
+      //user.favourites.filter((fav)=> fav.id=adId)
       :
       [...user.favourites,ad];
 
       if(!(await this.userRepository.save(user))) return {success: false};
         
-        return {success: true};
+        return  { success: true, saved: !isAlredySaved };;
     }
 
     async editProfile(accesUser: User, dto: UpdateUserDto, img: Express.Multer.File) {
