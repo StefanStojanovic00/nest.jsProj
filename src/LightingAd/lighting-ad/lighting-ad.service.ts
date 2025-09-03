@@ -33,6 +33,8 @@ export class LightingAdService {
   if(!user)
     throw new BadRequestException('InvalidUser');
 
+    
+
     const lad=this.lightAdRepository.create(createLightingAdDto);
 
     let paths: string[] =[];
@@ -43,9 +45,13 @@ export class LightingAdService {
       paths=null
     }
 
+     console.log('categorijaDTO:',createLightingAdDto.categoryID);
+
     const category: Category |  null = await this.categoryRepository.findOneBy({
       id: createLightingAdDto.categoryID,
     });
+
+    console.log('categorija:',category);
 
     if(!category) throw new BadRequestException('InvalideCategory');
 
